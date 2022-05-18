@@ -25,10 +25,10 @@ public class TelaPrincipal {
 				case 1: return TelaAluno.menuAluno(console);
 				case 2: return TelaCurso.menuCurso(console);
 				case 3: return TelaDisciplina.menuDisciplina(console);
-				case 0: System.out.println("    Aplica√ß√£o foi encerrada!");
+				case 0: System.out.println("    AplicaÁ„o foi encerrada!");
 						break;
 				default:
-					System.out.println("Op√ß√£o Inv√°lida!");
+					System.out.println("OpÁ„o inv·lida!");
 					TimeUnit.SECONDS.sleep(1);
 			}
 		} while(opcao!=0);

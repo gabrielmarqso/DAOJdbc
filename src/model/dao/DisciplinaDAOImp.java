@@ -1,7 +1,6 @@
 package model.dao;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,45 +8,53 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.db.Db;
-import model.entities.Curso;
 
-public class CursoDAOImp implements CursoDAO {
-	
+import model.db.Db;
+import model.entities.Disciplina;
+
+public class DisciplinaDAOImp implements DisciplinaDAO{
+
 	private Connection conexao = Db.getConexao();
 	
-	public CursoDAOImp(Connection conexao2) {
-		// TODO Auto-generated constructor stub
+	public DisciplinaDAOImp(Connection conexao) {
+		this.conexao = conexao;
 	}
 
 	@Override
-	public void insert(Curso obj) {
+	public void insert(Disciplina obj) {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		
 		try {
-			String sql = "INSERT INTO curso (nomecurso) VALUES (?)";
 			
+			String sql = "INSERT INTO disciplina (nomedisciplina, cargahoraria) VALUES (?, ?)";
 			pst = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pst.setString(1, obj.getNomeCurso());
-			int linhas = pst.executeUpdate();
-			if (linhas > 0) {
-				rs = pst.getGeneratedKeys();
-				rs.next();
-				obj.setIdcurso(rs.getInt(1));
-				System.out.println(obj.toString());
-				
-			}else {
-				System.out.println("Não foi possível cadastrar o curso!");
-			}
-		}catch(Exception e) {
+			pst.setString(1, obj.getNomeDisciplina());
+			pst.setInt(2, obj.getCargaHoraria());
 			
+					
+			int linhas = pst.executeUpdate();
+			
+			if(linhas > 0) {
+				rs  = pst.getGeneratedKeys();
+				rs.next();
+				
+				obj.setIdDisciplina(rs.getInt(1));
+				System.out.println(obj.toString() + " foi criado com sucesso!");
+			}else {
+				System.out.println("Não foi possível cadastra o disciplina!");
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		
+		
 	}
 
 	@Override
-	public void update(Curso obj) {
+	public void update(Disciplina obj) {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		
@@ -55,10 +62,12 @@ public class CursoDAOImp implements CursoDAO {
 			
 			
 			
-			String	sql = "UPDATE curso SET nomeCurso = ? WHERE Idcurso = ? ";
+			String	sql = "UPDATE disciplina SET nomedisciplina = ? , cargahoraria = ? WHERE iddisciplina = ? ";
 			pst = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			pst.setString(1, obj.getNomeCurso());
-			pst.setInt(2, obj.getIdcurso());
+			pst.setString(1, obj.getNomeDisciplina());
+			pst.setInt(2, obj.getCargaHoraria());
+			
+			pst.setInt(3, obj.getIdDisciplina());
 			
 			int linhas = pst.executeUpdate();
 			
@@ -70,7 +79,7 @@ public class CursoDAOImp implements CursoDAO {
 				
 				System.out.println(obj.toString() + " foi atualizado com sucesso!");
 			}else {
-				System.out.println("Não foi possível atualizar o curso!");
+				System.out.println("Não foi possível atualizar a disciplina!");
 			}
 			
 			
@@ -89,7 +98,7 @@ public class CursoDAOImp implements CursoDAO {
 
 		try {
 			
-			String sql = "DELETE FROM curso WHERE Idcurso = ?";
+			String sql = "DELETE FROM disciplina WHERE iddisciplina = ?";
 			pst = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pst.setInt(1, id);
 			
@@ -101,35 +110,35 @@ public class CursoDAOImp implements CursoDAO {
 				
 				System.out.println(id + " foi removido com sucesso!");
 			}else {
-				System.out.println("Não foi possível remover o curso!");
+				System.out.println("Não foi possível remover o disciplina!");
 			}
+			
 			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		
 	}
 
 	@Override
-	public Curso findById(Integer id) {
+	public Disciplina findById(Integer id) {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		
 		try {
 			
-			String sql = "SELECT * FROM curso WHERE Idcurso = ?";
+			String sql = "SELECT * FROM disciplina WHERE iddisciplina = ?";
 			
 			pst = conexao.prepareStatement(sql);	
 			pst.setInt(1, id);						
 			rs = pst.executeQuery();
 			rs.next();
 			
-			Curso c = new Curso(rs.getInt(1), rs.getString(2));
+			Disciplina d = new Disciplina(rs.getInt(1), rs.getString(2), rs.getInt(3));
 					
 			
-			return c;
+			return d;
 		
 			
 		} catch (SQLException e) {
@@ -138,25 +147,26 @@ public class CursoDAOImp implements CursoDAO {
 		
 		
 		return null;
+	
 	}
 
 	@Override
-	public List<Curso> findAll() {
+	public List<Disciplina> findAll() {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		
-		List<Curso> lista = new ArrayList<>();
+		List<Disciplina> lista = new ArrayList<>();
 		
 		try {
-			String sql = "SELECT * FROM curso";
+			String sql = "SELECT * FROM disciplina";
 			
 			pst = conexao.prepareStatement(sql);					
 			rs = pst.executeQuery();
 			
 			while(rs.next()) {
-				Curso c = new Curso(rs.getInt(1), rs.getString(2));
+				Disciplina d = new Disciplina(rs.getInt(1), rs.getString(2), rs.getInt(3));
 				
-				lista.add(c);
+				lista.add(d);
 			}
 			
 		
@@ -167,7 +177,7 @@ public class CursoDAOImp implements CursoDAO {
 		
 		
 		return lista;
-	
+		
+		
 	}
-
 }
